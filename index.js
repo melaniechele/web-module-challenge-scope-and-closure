@@ -31,6 +31,8 @@ function processFirstItem(stringList, callback) {
  * 2. Which of the two uses a closure? How can you tell?
  * Counter one because it is taking a creating a constant and giving it the value of the function.
  * 3. In what scenario would the counter1 code be preferable? In what scenario would counter2 be better? 
+ * counter two doesn't ever go away because the count is global 
+ * counter one count is protected.
  * counter 1 would be preferable if they wanted to keep adding to the scores already gotten. counter 2 would be preferable if they wanted to reset it very time. 
  *
 */
@@ -45,6 +47,9 @@ function counterMaker() {
 
 const counter1 = counterMaker();
 console.log(counter1);
+
+
+
 
 // counter2 code
 let count = 0;
@@ -91,12 +96,13 @@ objScor.away = objScor.away + func();
 
 }
 
-console.log(finalScore(inning,9));
+console.log(finalScore(inning, 9));
 
 /* Task 4: 
 
 Create a function called `scoreboard` that accepts the following parameters: 
 
+(1) Callback function `getInningScore`
 (1) Callback function `inning` that you wrote above
 (2) A number of innings
 
@@ -114,8 +120,47 @@ and returns the score at each pont in the game, like so:
 
 Final Score: 6 - 10 */
 
-function scoreboard(/* CODE HERE */) {
-  /* CODE HERE */
+
+function getInningScore (callback) {
+  let inningScore = {away: 0, home: 0};
+  inningScore.away = inningScore.away + callback();
+  inningScore.home = inningScore.home + callback();
+  console.log ("This is the inning score " + inningScore.away + "-" + inningScore.home)
+return inningScore  
 }
 
 
+function scoreboard(callback, otherCallback, gameLength) {
+  console.log ("Here's scoreboard redux inning by inning");
+  let myFinalScore = {away: 0, home: 0};
+ 
+  
+  for (let i = 1; i <= gameLength; i++) {
+     let inningScore = {away: 0, home: 0};
+     // this it the where everything gets put together
+     inningScore = otherCallback(callback);
+     
+     // where all the math happens 
+     myFinalScore.away = myFinalScore.away + inningScore.away;
+     myFinalScore.home = myFinalScore.home + inningScore.home;
+     
+    switch (i) {
+      case 1:
+          console.log (`${i}st inning: ${myFinalScore.away} - ${myFinalScore.home}`);
+          break;
+      case 2:
+          console.log (`${i}nd inning: ${myFinalScore.away} - ${myFinalScore.home}`);
+          break;
+      case 3:
+          console.log (`${i}rd inning: ${myFinalScore.away} - ${myFinalScore.home}`);
+          break;
+      default:
+          console.log (`${i}th inning: ${myFinalScore.away} - ${myFinalScore.home}`);
+    }
+  }
+  
+   
+  console.log (`The final score is Away ${myFinalScore.away} - Home ${myFinalScore.home}`)
+  return myFinalScore;
+}
+scoreboard(inning, getInningScore, 9);
